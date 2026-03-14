@@ -4,9 +4,11 @@
 // Edit these values to control how the booking calendar works.
 // All API files import from here; no need to touch anything else.
 
-// Maximum number of jobs that can be booked on any single day.
-// Once this limit is reached, the day shows as "Fully Booked".
-export const MAX_JOBS_PER_DAY = 3;
+// Max jobs in the morning period (8–9 AM + 9–10 AM combined).
+export const MORNING_CAPACITY = 6;
+
+// Max jobs in the afternoon period (2–4 PM).
+export const AFTERNOON_CAPACITY = 3;
 
 // How many months ahead customers can browse and book.
 export const MAX_ADVANCE_MONTHS = 3;

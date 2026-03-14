@@ -1,36 +1,22 @@
 // GET /api/slots?date=2024-01-15
-// Returns the six predefined arrival-window slots and whether each is available.
-// A slot is unavailable if an existing calendar event overlaps it,
-// or if it is already in the past (for today's date).
+// Returns the three predefined arrival-window slots and whether each is available.
+// Morning slots (8–9 AM, 9–10 AM) share a pool of MORNING_CAPACITY bookings.
+// The afternoon slot (2–4 PM) has its own AFTERNOON_CAPACITY.
+// A slot is also unavailable if it is already in the past (for today's date).
 
-import { CALENDAR_ID as CFG_CALENDAR_ID, TIMEZONE } from '../../config.js';
-import { getCalendar, getLAOffset } from '../../lib/calendar.js';
+import { CALENDAR_ID as CFG_CALENDAR_ID, TIMEZONE, MORNING_CAPACITY, AFTERNOON_CAPACITY } from '../../config.js';
+import { getCalendar, getLAOffset, toHHMM } from '../../lib/calendar.js';
 
 const CALENDAR_ID = process.env.CALENDAR_ID || CFG_CALENDAR_ID;
 const TZ          = TIMEZONE;
 
-// Six 2-hour arrival windows covering business hours
+// Three arrival windows: two 1-hour morning slots sharing a pool, one 2-hour afternoon slot
 export const TIME_SLOTS = [
-    { label: '7:00 AM – 9:00 AM',  start: '07:00', end: '09:00' },
-    { label: '9:00 AM – 11:00 AM', start: '09:00', end: '11:00' },
-    { label: '11:00 AM – 1:00 PM', start: '11:00', end: '13:00' },
-    { label: '1:00 PM – 3:00 PM',  start: '13:00', end: '15:00' },
-    { label: '3:00 PM – 5:00 PM',  start: '15:00', end: '17:00' },
-    { label: '5:00 PM – 7:00 PM',  start: '17:00', end: '19:00' },
+    { label: '8:00 AM – 9:00 AM',  start: '08:00', end: '09:00', period: 'morning'   },
+    { label: '9:00 AM – 10:00 AM', start: '09:00', end: '10:00', period: 'morning'   },
+    { label: '2:00 PM – 4:00 PM',  start: '14:00', end: '16:00', period: 'afternoon' },
 ];
 
-// Returns 'HH:MM' string in LA time from an ISO dateTime string
-function toHHMM(dateTimeStr) {
-    const parts = new Date(dateTimeStr)
-        .toLocaleTimeString('en-US', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false })
-        .split(':');
-    return `${parts[0].padStart(2, '0')}:${parts[1]}`;
-}
-
-// True when [aStart, aEnd) and [bStart, bEnd) overlap
-function overlaps(aStart, aEnd, bStart, bEnd) {
-    return aStart < bEnd && bStart < aEnd;
-}
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -61,7 +47,7 @@ export default async function handler(req, res) {
             singleEvents: true,
         });
 
-        // Only timed events can conflict with arrival windows
+        // Only timed events count against capacity
         const bookedRanges = (data.items || [])
             .filter(e => e.start.dateTime)
             .map(e => ({
@@ -69,15 +55,22 @@ export default async function handler(req, res) {
                 end:   toHHMM(e.end.dateTime),
             }));
 
+        // Count bookings by start time: before noon = morning, noon+ = afternoon.
+        // This captures manually-created events at any time, not just the 3 booking windows.
+        const morningCount   = bookedRanges.filter(r => r.start < '12:00').length;
+        const afternoonCount = bookedRanges.filter(r => r.start >= '12:00').length;
+
         const nowLA    = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }));
         const todayStr = nowLA.toLocaleDateString('en-CA');
         const nowHHMM  = `${String(nowLA.getHours()).padStart(2, '0')}:${String(nowLA.getMinutes()).padStart(2, '0')}`;
         const isToday  = date === todayStr;
 
         const slots = TIME_SLOTS.map(slot => {
-            const taken = bookedRanges.some(r => overlaps(r.start, r.end, slot.start, slot.end));
-            const past  = isToday && slot.start <= nowHHMM;
-            return { ...slot, available: !taken && !past };
+            const past = isToday && slot.start <= nowHHMM;
+            const full = slot.period === 'morning'
+                ? morningCount >= MORNING_CAPACITY
+                : afternoonCount >= AFTERNOON_CAPACITY;
+            return { ...slot, available: !past && !full };
         });
 
         return res.status(200).json({ slots, date });

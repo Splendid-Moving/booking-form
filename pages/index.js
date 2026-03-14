@@ -36,7 +36,7 @@ export default function BookingPage() {
                 <div className="hero-inner container">
                     <div className="hero-badge">Online Booking</div>
                     <h1>Schedule Your Move</h1>
-                    <p>Pick a date, choose an arrival window, and you&apos;re all set.<br />We&apos;ll take care of the rest.</p>
+                    <p>Fill in your details, pick a date and time, and you&apos;re all set.<br />We&apos;ll take care of the rest.</p>
                     <div className="hero-trust">
                         <div className="trust-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -64,31 +64,153 @@ export default function BookingPage() {
             <main className="booking-main">
                 <div className="booking-container container">
 
-                    {/* Progress Bar */}
+                    {/* Progress Bar — 6 steps */}
                     <div className="steps-bar" id="steps-bar" aria-label="Booking steps">
                         <div className="step-item active" data-step="1">
                             <span className="step-num">1</span>
-                            <span className="step-label">Date</span>
+                            <span className="step-label">Contact</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="2">
                             <span className="step-num">2</span>
-                            <span className="step-label">Time</span>
+                            <span className="step-label">Move Info</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="3">
                             <span className="step-num">3</span>
-                            <span className="step-label">Details</span>
+                            <span className="step-label">Date</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="4">
                             <span className="step-num">4</span>
+                            <span className="step-label">Time</span>
+                        </div>
+                        <div className="step-divider" aria-hidden="true"></div>
+                        <div className="step-item" data-step="5">
+                            <span className="step-num">5</span>
+                            <span className="step-label">Terms</span>
+                        </div>
+                        <div className="step-divider" aria-hidden="true"></div>
+                        <div className="step-item" data-step="6">
+                            <span className="step-num">6</span>
                             <span className="step-label">Confirm</span>
                         </div>
                     </div>
 
-                    {/* ── Step 1: Date ──────────────────────── */}
-                    <div className="booking-panel active" id="panel-date" role="region" aria-label="Select a date">
+                    {/* ── Step 1: Contact Info ───────────────── */}
+                    <div className="booking-panel active" id="panel-contact" role="region" aria-label="Your contact information">
+                        <div className="panel-header">
+                            <h2>Let&apos;s Book Your Move</h2>
+                            <p>You&apos;ve received your quote — now let&apos;s lock in your date.</p>
+                        </div>
+                        <form id="contact-form" noValidate>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label htmlFor="firstName">First Name <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="text" id="firstName" name="firstName" required autoComplete="given-name" />
+                                    <span className="field-error" id="err-firstName"></span>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="lastName">Last Name <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="text" id="lastName" name="lastName" required autoComplete="family-name" />
+                                    <span className="field-error" id="err-lastName"></span>
+                                </div>
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label htmlFor="phone">Phone Number <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="tel" id="phone" name="phone" required autoComplete="tel" placeholder="(213) 555-0123" />
+                                    <span className="field-error" id="err-phone"></span>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="email">Email Address <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="email" id="email" name="email" required autoComplete="email" />
+                                    <span className="field-error" id="err-email"></span>
+                                </div>
+                            </div>
+                            <div className="panel-actions panel-actions--end">
+                                <button type="submit" className="btn btn--primary">
+                                    Continue
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* ── Step 2: Move Info + Addresses ─────── */}
+                    <div className="booking-panel" id="panel-address" role="region" aria-label="Your move addresses and details">
+                        <div className="panel-header">
+                            <h2>Move Details</h2>
+                            <p id="step2-contact-display" className="step-context"></p>
+                        </div>
+                        <form id="address-form" noValidate>
+                            <div className="form-section">
+                                <h3 className="form-section-title">Addresses</h3>
+                                <div className="form-group">
+                                    <label htmlFor="fromAddress">Moving From <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="text" id="fromAddress" name="fromAddress" required autoComplete="off" placeholder="Full address including city, state" />
+                                    <span className="field-error" id="err-fromAddress"></span>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="toAddress">Moving To <span className="req" aria-hidden="true">*</span></label>
+                                    <input type="text" id="toAddress" name="toAddress" required autoComplete="off" placeholder="Full address including city, state" />
+                                    <span className="field-error" id="err-toAddress"></span>
+                                </div>
+                            </div>
+                            <div className="form-section">
+                                <h3 className="form-section-title">Move Information</h3>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="movers">Number of Movers <span className="req" aria-hidden="true">*</span></label>
+                                        <select id="movers" name="movers" required>
+                                            <option value="">Select…</option>
+                                            <option value="2">2 Movers</option>
+                                            <option value="3">3 Movers</option>
+                                            <option value="4">4 Movers</option>
+                                        </select>
+                                        <span className="field-error" id="err-movers"></span>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="moveSize">Move Size <span className="req" aria-hidden="true">*</span></label>
+                                        <select id="moveSize" name="moveSize" required>
+                                            <option value="">Select…</option>
+                                            <option value="Studio">Studio</option>
+                                            <option value="1 Bedroom">1 Bedroom</option>
+                                            <option value="2 Bedrooms">2 Bedrooms</option>
+                                            <option value="3 Bedrooms">3 Bedrooms</option>
+                                            <option value="4+ Bedrooms">4+ Bedrooms</option>
+                                            <option value="Office / Commercial">Office / Commercial</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <span className="field-error" id="err-moveSize"></span>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="notes">Additional Notes <span className="optional">(optional)</span></label>
+                                    <textarea id="notes" name="notes" rows="3" placeholder="Special items, parking info, floor level, elevator access, etc."></textarea>
+                                </div>
+                            </div>
+                            <div className="panel-actions">
+                                <button type="button" className="btn btn--back" id="back-to-contact">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <polyline points="15 18 9 12 15 6" />
+                                    </svg>
+                                    Back
+                                </button>
+                                <button type="submit" className="btn btn--primary">
+                                    Continue to Calendar
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* ── Step 3: Date ───────────────────────── */}
+                    <div className="booking-panel" id="panel-date" role="region" aria-label="Select a date">
                         <div className="panel-header">
                             <h2>Select a Date</h2>
                             <p>Available dates are highlighted below</p>
@@ -122,19 +244,39 @@ export default function BookingPage() {
                                 <div className="legend-item"><span className="legend-dot legend-dot--booked"></span>Fully booked</div>
                             </div>
                         </div>
+                        <div className="office-notice">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="office-notice-icon">
+                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <p><strong>Don&apos;t see your preferred date?</strong> We can often accommodate requests not shown here — including today and tomorrow. Call or text <a href="tel:2137240394">(213) 724-0394</a> or email <a href="mailto:info@splendidmoving.com">info@splendidmoving.com</a>.</p>
+                        </div>
+                        <div className="panel-actions panel-actions--left">
+                            <button className="btn btn--back" id="back-to-address">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                                Back
+                            </button>
+                        </div>
                     </div>
 
-                    {/* ── Step 2: Time Slot ─────────────────── */}
+                    {/* ── Step 4: Time Slot ─────────────────── */}
                     <div className="booking-panel" id="panel-time" role="region" aria-label="Select an arrival window">
                         <div className="panel-header">
                             <h2>Select Arrival Window</h2>
-                            <p id="step2-date-display" className="step-context"></p>
+                            <p id="step4-date-display" className="step-context"></p>
                         </div>
                         <div className="slots-loading" id="slots-loading" aria-live="polite">
                             <div className="spinner" aria-hidden="true"></div>
                             <span>Checking availability…</span>
                         </div>
                         <div className="slots-grid" id="slots-grid" role="list" aria-label="Available time slots"></div>
+                        <div className="office-notice" id="slots-office-notice">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="office-notice-icon">
+                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <p><strong>Need a different time?</strong> Contact our office directly — we may have additional availability not shown here. Call or text <a href="tel:2137240394">(213) 724-0394</a> or email <a href="mailto:info@splendidmoving.com">info@splendidmoving.com</a>.</p>
+                        </div>
                         <div className="panel-actions panel-actions--left">
                             <button className="btn btn--back" id="back-to-date">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -145,102 +287,63 @@ export default function BookingPage() {
                         </div>
                     </div>
 
-                    {/* ── Step 3: Details Form ──────────────── */}
-                    <div className="booking-panel" id="panel-details" role="region" aria-label="Enter your move details">
+                    {/* ── Step 5: Terms & Conditions ────────── */}
+                    <div className="booking-panel" id="panel-terms" role="region" aria-label="Terms and conditions">
                         <div className="panel-header">
-                            <h2>Move Details</h2>
-                            <p id="step3-summary" className="step-context"></p>
+                            <h2>Terms &amp; Conditions</h2>
+                            <p id="step5-summary" className="step-context"></p>
                         </div>
-                        <form id="booking-form" noValidate>
-                            <div className="form-section">
-                                <h3 className="form-section-title">Contact Information</h3>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="firstName">First Name <span className="req" aria-hidden="true">*</span></label>
-                                        <input type="text" id="firstName" name="firstName" required autoComplete="given-name" />
-                                        <span className="field-error" id="err-firstName"></span>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="lastName">Last Name <span className="req" aria-hidden="true">*</span></label>
-                                        <input type="text" id="lastName" name="lastName" required autoComplete="family-name" />
-                                        <span className="field-error" id="err-lastName"></span>
-                                    </div>
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="phone">Phone Number <span className="req" aria-hidden="true">*</span></label>
-                                        <input type="tel" id="phone" name="phone" required autoComplete="tel" placeholder="(213) 555-0123" />
-                                        <span className="field-error" id="err-phone"></span>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="email">Email Address <span className="req" aria-hidden="true">*</span></label>
-                                        <input type="email" id="email" name="email" required autoComplete="email" />
-                                        <span className="field-error" id="err-email"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="form-section">
-                                <h3 className="form-section-title">Move Information</h3>
-                                <div className="form-group">
-                                    <label htmlFor="fromAddress">Moving From <span className="req" aria-hidden="true">*</span></label>
-                                    <input type="text" id="fromAddress" name="fromAddress" required autoComplete="off" placeholder="Full address including city, state" />
-                                    <span className="field-error" id="err-fromAddress"></span>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="toAddress">Moving To <span className="req" aria-hidden="true">*</span></label>
-                                    <input type="text" id="toAddress" name="toAddress" required autoComplete="off" placeholder="Full address including city, state" />
-                                    <span className="field-error" id="err-toAddress"></span>
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="movers">Number of Movers <span className="req" aria-hidden="true">*</span></label>
-                                        <select id="movers" name="movers" required>
-                                            <option value="">Select…</option>
-                                            <option value="2">2 Movers</option>
-                                            <option value="3">3 Movers</option>
-                                            <option value="4">4 Movers</option>
-                                        </select>
-                                        <span className="field-error" id="err-movers"></span>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="moveSize">Move Size <span className="req" aria-hidden="true">*</span></label>
-                                        <select id="moveSize" name="moveSize" required>
-                                            <option value="">Select…</option>
-                                            <option value="Studio">Studio</option>
-                                            <option value="1 Bedroom">1 Bedroom</option>
-                                            <option value="2 Bedrooms">2 Bedrooms</option>
-                                            <option value="3 Bedrooms">3 Bedrooms</option>
-                                            <option value="4+ Bedrooms">4+ Bedrooms</option>
-                                            <option value="Office / Commercial">Office / Commercial</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        <span className="field-error" id="err-moveSize"></span>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="notes">Additional Notes <span className="optional">(optional)</span></label>
-                                    <textarea id="notes" name="notes" rows="3" placeholder="Special items, parking info, floor level, elevator access, etc."></textarea>
-                                </div>
-                            </div>
-                            <div className="panel-actions">
-                                <button type="button" className="btn btn--back" id="back-to-time">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <polyline points="15 18 9 12 15 6" />
-                                    </svg>
-                                    Back
-                                </button>
-                                <button type="submit" className="btn btn--primary">
-                                    Review Booking
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <polyline points="9 18 15 12 9 6" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
+                        <div className="terms-box" tabIndex="0" aria-label="Terms and conditions text">
+                            <h3>1. Booking Confirmation</h3>
+                            <p>Submitting this form constitutes a booking request. Your move is confirmed once you receive a confirmation call or email from Splendid Moving. We will contact you within 24 hours to verify all details.</p>
+
+                            <h3>2. Deposit &amp; Payment</h3>
+                            <p>A deposit may be required to hold your moving date. Full payment is due upon completion of the move. We accept cash, major credit cards, and Zelle. Prices are based on the quote you received and may be adjusted if the scope of the move changes.</p>
+
+                            <h3>3. Cancellation &amp; Rescheduling</h3>
+                            <p>Cancellations or rescheduling requests made at least 48 hours before the scheduled move are free of charge. Cancellations within 48 hours of the move may be subject to a cancellation fee. Please contact our office as soon as possible if you need to make changes.</p>
+
+                            <h3>4. Arrival Window</h3>
+                            <p>Your selected arrival window is an estimated range. Actual arrival may vary by up to 30 minutes due to traffic or the completion of a prior job. We will notify you if there are any significant delays.</p>
+
+                            <h3>5. Liability &amp; Valuation</h3>
+                            <p>Splendid Moving carries full general liability insurance. Standard coverage is included at no additional charge. We recommend documenting high-value or fragile items prior to moving day. We are not liable for items not disclosed at the time of booking.</p>
+
+                            <h3>6. Additional Services</h3>
+                            <p>Any services requested on moving day that were not included in your original quote (packing, specialty item handling, long carries, extra stops, etc.) will be discussed and agreed upon before work begins and charged at our standard rates.</p>
+
+                            <h3>7. Access &amp; Parking</h3>
+                            <p>You are responsible for ensuring adequate parking and elevator/stairwell access at both locations. Any parking fees or fines incurred by our crew will be added to your final invoice.</p>
+
+                            <p style={{marginTop: '1rem', fontSize: '0.8rem', color: 'var(--gray-400)'}}>
+                                These terms are subject to change. The final terms applicable to your move will be provided in your booking confirmation.
+                            </p>
+                        </div>
+                        <div className="terms-accept">
+                            <label className="checkbox-label" htmlFor="terms-checkbox">
+                                <input type="checkbox" id="terms-checkbox" />
+                                <span>I have read and agree to the terms and conditions above</span>
+                            </label>
+                            <span className="field-error" id="err-terms"></span>
+                        </div>
+                        <div className="panel-actions">
+                            <button type="button" className="btn btn--back" id="back-to-time">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                                Back
+                            </button>
+                            <button type="button" className="btn btn--primary" id="terms-accept-btn">
+                                Review My Booking
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* ── Step 4: Confirm ───────────────────── */}
-                    <div className="booking-panel" id="panel-confirm" role="region" aria-label="Confirm your booking">
+                    {/* ── Step 6: Review & Confirm ──────────── */}
+                    <div className="booking-panel" id="panel-confirm" role="region" aria-label="Review and confirm your booking">
                         <div className="panel-header">
                             <h2>Review Your Booking</h2>
                             <p>Please confirm everything looks correct before submitting.</p>
@@ -248,15 +351,15 @@ export default function BookingPage() {
                         <div className="booking-summary" id="booking-summary"></div>
                         <div className="api-error" id="api-error" role="alert"></div>
                         <div className="panel-actions">
-                            <button className="btn btn--back" id="back-to-details">
+                            <button className="btn btn--back" id="back-to-terms">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                     <polyline points="15 18 9 12 15 6" />
                                 </svg>
-                                Edit Details
+                                Edit
                             </button>
                             <button className="btn btn--primary" id="confirm-btn">
-                                <span id="confirm-btn-text">Confirm Booking</span>
-                                <span id="confirm-btn-spinner" className="btn-spinner" aria-hidden="true"></span>
+                                <span id="confirm-btn-text">Submit Booking</span>
+                                <span id="confirm-btn-spinner" className="btn-spinner" style={{display: 'none'}} aria-hidden="true"></span>
                             </button>
                         </div>
                     </div>
@@ -265,8 +368,8 @@ export default function BookingPage() {
                     <div className="booking-panel" id="panel-success" role="region" aria-label="Booking confirmed">
                         <div className="success-screen">
                             <div className="success-icon" aria-hidden="true">✓</div>
-                            <h2>Booking Confirmed!</h2>
-                            <p className="success-msg">Your move is scheduled. We&apos;ll reach out to confirm the details.</p>
+                            <h2>Booking Submitted!</h2>
+                            <p className="success-msg">Your request is in — we&apos;ll call or email you within 24 hours to confirm the details of your move.</p>
                             <div className="success-card" id="success-card"></div>
                             <div className="success-actions">
                                 <a href="#" id="add-to-gcal" className="btn btn--outline" target="_blank" rel="noopener">
@@ -294,6 +397,11 @@ export default function BookingPage() {
                 </div>
             </footer>
 
+            {/* Google Maps — Places autocomplete + Distance Matrix */}
+            <Script
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8m3zbP2Eknf1agTJPLpHc4U6ACh8HpME&libraries=places&loading=async&callback=initAddressAutocomplete"
+                strategy="afterInteractive"
+            />
             <Script src="/script.js" strategy="afterInteractive" />
         </>
     );
