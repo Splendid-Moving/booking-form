@@ -39,11 +39,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    const detailsValue = [
-        `Movers: ${movers}`,
-        notes ? `Notes: ${notes.trim()}` : null,
-    ].filter(Boolean).join(' | ');
-
     const contactData = {
         firstName,
         lastName,
@@ -58,7 +53,8 @@ export default async function handler(req, res) {
             { id: 'DjfpJEtJnBnDBP6nvJ1l', value: toAddress },
             { id: 'VuatzebiX5qPrzGjl4d4', value: date },
             { id: 'BZMRDjwmqFl957qHlTO6', value: formatArrivalTime(slotLabel) },
-            { id: 'HZgxySrqsR4IICCBWZr5', value: detailsValue },
+            { id: 'bB6TkyeEhBbrX1ao9eEr', value: String(movers) },
+            { id: 'HZgxySrqsR4IICCBWZr5', value: notes ? notes.trim() : '' },
         ],
     };
 
