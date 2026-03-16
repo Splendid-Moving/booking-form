@@ -40,6 +40,7 @@ export default async function handler(req, res) {
 
     try {
         const calendar = await getCalendar();
+        console.log('[availability] using calendarId:', CALENDAR_ID);
 
         const { data } = await calendar.events.list({
             calendarId: CALENDAR_ID,

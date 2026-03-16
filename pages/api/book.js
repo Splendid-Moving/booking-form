@@ -84,6 +84,9 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'Failed to create contact in CRM' });
             }
 
+            // locationId is required on POST but must be omitted on PUT
+            const { locationId: _loc, ...updateData } = contactData;
+
             const updateRes  = await fetch(`${GHL_API}/contacts/${existingId}`, {
                 method: 'PUT',
                 headers: {
@@ -91,7 +94,7 @@ export default async function handler(req, res) {
                     'Content-Type':  'application/json',
                     'Version':        GHL_VERSION,
                 },
-                body: JSON.stringify(contactData),
+                body: JSON.stringify(updateData),
             });
 
             const updateData = await updateRes.json();
