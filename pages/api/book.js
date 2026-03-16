@@ -1,88 +1,14 @@
 // POST /api/book
-// Creates a Google Calendar event for the booking.
-// Optionally syncs a contact to GoHighLevel if GHL env vars are present.
+// Creates a GoHighLevel contact for the booking.
 
-import { CALENDAR_ID as CFG_CALENDAR_ID, TIMEZONE } from '../../config.js';
-import { getCalendar } from '../../lib/calendar.js';
+const GHL_API = 'https://services.leadconnectorhq.com';
+const GHL_VERSION = '2021-07-28';
 
-const CALENDAR_ID = process.env.CALENDAR_ID || CFG_CALENDAR_ID;
-const TZ          = TIMEZONE;
-
-function buildDescription({ firstName, lastName, phone, email, fromAddress, toAddress, movers, moveSize, slotLabel, notes }) {
-    const lines = [
-        '📋 BOOKING DETAILS',
-        '──────────────────────────────',
-        `👤 Name:      ${firstName} ${lastName}`,
-        `📞 Phone:     ${phone}`,
-        `📧 Email:     ${email}`,
-        '',
-        `📍 From:      ${fromAddress}`,
-        `📍 To:        ${toAddress}`,
-        '',
-        `👷 Movers:    ${movers} movers`,
-        `🏠 Move Size: ${moveSize}`,
-        `⏰ Window:    ${slotLabel}`,
-    ];
-    if (notes && notes.trim()) {
-        lines.push('', `📝 Notes:     ${notes.trim()}`);
-    }
-    lines.push('', '──────────────────────────────', 'Booked via: splendidmoving.com/calendar');
-    return lines.join('\n');
-}
-
-// Optional: sync to GoHighLevel CRM (fire-and-forget, non-blocking)
-async function syncToGHL({ firstName, lastName, phone, email, fromAddress, toAddress, moveSize, moveDate, movers, slotLabel, notes }) {
-    const token      = process.env.GHL_ACCESS_TOKEN;
-    const locationId = process.env.GHL_LOCATION_ID;
-    if (!token || !locationId) return;
-
-    const contactData = {
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        phone,
-        email,
-        locationId,
-        tags: ['online-booking', `${movers}-movers`],
-        customFields: [
-            { id: 'yS4Bj6LtQ3lLCuju7vl0', value: moveSize },
-            { id: 'KyE8Eopo3MXg4aXjGnqS', value: fromAddress },
-            { id: 'DjfpJEtJnBnDBP6nvJ1l', value: toAddress },
-            { id: 'VuatzebiX5qPrzGjl4d4', value: moveDate },
-            { id: 'HZgxySrqsR4IICCBWZr5', value: `Arrival: ${slotLabel}${notes ? ' | Notes: ' + notes : ''}` },
-            { id: 'i71w1J9MFtRcyAQYqElg', value: 'Online Booking' },
-        ],
-    };
-
-    try {
-        const res = await fetch('https://services.leadconnectorhq.com/contacts/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Version': '2021-07-28',
-            },
-            body: JSON.stringify(contactData),
-        });
-
-        if (!res.ok) {
-            const body = await res.json();
-            const existingId = body?.meta?.contactId;
-            if (existingId) {
-                await fetch(`https://services.leadconnectorhq.com/contacts/${existingId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        'Version': '2021-07-28',
-                    },
-                    body: JSON.stringify(contactData),
-                });
-            }
-        }
-    } catch (err) {
-        console.error('[book] GHL sync failed (non-fatal):', err.message);
-    }
+// "8:00 AM – 9:00 AM" → "8-9am" | "2:00 PM – 4:00 PM" → "2-4pm"
+function formatArrivalTime(slotLabel) {
+    const m = slotLabel?.match(/(\d+):\d+\s*(AM|PM)\s*[–-]\s*(\d+):\d+\s*(AM|PM)/i);
+    if (!m) return slotLabel || '';
+    return `${m[1]}-${m[3]}${m[4].toLowerCase()}`;
 }
 
 export default async function handler(req, res) {
@@ -105,26 +31,87 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: `Missing required fields: ${missing.join(', ')}` });
     }
 
-    try {
-        const calendar = await getCalendar(true);
+    const token      = process.env.GHL_ACCESS_TOKEN;
+    const locationId = process.env.GHL_LOCATION_ID;
 
-        const event = await calendar.events.insert({
-            calendarId: CALENDAR_ID,
-            resource: {
-                summary:     `${firstName} ${lastName}`,
-                description: buildDescription({ firstName, lastName, phone, email, fromAddress, toAddress, movers, moveSize, slotLabel, notes }),
-                start: { dateTime: `${date}T${slotStart}:00`, timeZone: TZ },
-                end:   { dateTime: `${date}T${slotEnd}:00`,   timeZone: TZ },
-                colorId: '2',
-                extendedProperties: {
-                    private: { source: 'online_booking', phone, email },
-                },
+    if (!token || !locationId) {
+        console.error('[book] Missing GHL environment variables');
+        return res.status(500).json({ error: 'Server configuration error' });
+    }
+
+    const detailsValue = [
+        `Movers: ${movers}`,
+        notes ? `Notes: ${notes.trim()}` : null,
+    ].filter(Boolean).join(' | ');
+
+    const contactData = {
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        phone,
+        email,
+        locationId,
+        tags: ['Booking form'],
+        customFields: [
+            { id: 'yS4Bj6LtQ3lLCuju7vl0', value: moveSize },
+            { id: 'KyE8Eopo3MXg4aXjGnqS', value: fromAddress },
+            { id: 'DjfpJEtJnBnDBP6nvJ1l', value: toAddress },
+            { id: 'VuatzebiX5qPrzGjl4d4', value: date },
+            { id: 'BZMRDjwmqFl957qHlTO6', value: formatArrivalTime(slotLabel) },
+            { id: 'HZgxySrqsR4IICCBWZr5', value: detailsValue },
+        ],
+    };
+
+    try {
+        const ghlRes  = await fetch(`${GHL_API}/contacts/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type':  'application/json',
+                'Version':        GHL_VERSION,
             },
+            body: JSON.stringify(contactData),
         });
 
-        syncToGHL({ firstName, lastName, phone, email, fromAddress, toAddress, moveSize, moveDate: date, movers, slotLabel, notes });
+        const ghlData = await ghlRes.json();
 
-        return res.status(200).json({ success: true, eventId: event.data.id });
+        // Duplicate contact — update instead of failing
+        if (!ghlRes.ok && ghlData.message?.includes('duplicated contacts')) {
+            const existingId = ghlData.meta?.contactId;
+
+            if (!existingId) {
+                console.error('[book] Duplicate contact but no ID returned:', ghlData);
+                return res.status(400).json({ error: 'Failed to create contact in CRM' });
+            }
+
+            const updateRes  = await fetch(`${GHL_API}/contacts/${existingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type':  'application/json',
+                    'Version':        GHL_VERSION,
+                },
+                body: JSON.stringify(contactData),
+            });
+
+            const updateData = await updateRes.json();
+
+            if (!updateRes.ok) {
+                console.error('[book] Failed to update existing contact:', updateData);
+                return res.status(updateRes.status).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });
+            }
+
+            return res.status(200).json({ success: true, eventId: existingId });
+        }
+
+        if (!ghlRes.ok) {
+            console.error('[book] GHL API error:', ghlData);
+            return res.status(ghlRes.status).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });
+        }
+
+        const contactId = ghlData.contact?.id || ghlData.id;
+        return res.status(200).json({ success: true, eventId: contactId });
+
     } catch (err) {
         console.error('[book]', err.message);
         return res.status(500).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });

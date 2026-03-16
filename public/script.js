@@ -33,6 +33,21 @@
         confirmedEventId: null,
         distanceMiles:    null,   // null = unknown; number after check
         _distancePromise: null,   // in-flight Distance Matrix promise
+        selectedMoveSize: null,   // move size chosen in step 1
+        selectedMovers:   null,   // mover count chosen in step 1
+    };
+
+    // Recommended movers per move size
+    const MOVER_RECOMMENDATIONS = {
+        'Few Items':    2,
+        'Studio':       2,
+        '1 Bedroom':    2,
+        '2 Bedrooms':   3,
+        '3 Bedrooms':   4,
+        '4+ Bedrooms':  4,
+        'Small Office': 3,
+        'Medium Office': 4,
+        'Large Office': 4,
     };
 
     // ── DOM References ────────────────────────────────────────
@@ -42,6 +57,7 @@
         stepsBar:            $('steps-bar'),
 
         // Panels
+        panelMoveSize:       $('panel-move-size'),
         panelContact:        $('panel-contact'),
         panelAddress:        $('panel-address'),
         panelDate:           $('panel-date'),
@@ -50,10 +66,19 @@
         panelConfirm:        $('panel-confirm'),
         panelSuccess:        $('panel-success'),
 
-        // Contact form (step 1)
+        // Move size step (step 1)
+        moveSizeSelect:      $('move-size-select'),
+        errMoveSizeSelect:   $('err-move-size-select'),
+        moversSection:       $('movers-section'),
+        moversGrid:          $('movers-grid'),
+        moverWarning:        $('mover-warning'),
+        errMoversStep1:      $('err-movers-step1'),
+        moveSizeContinue:    $('move-size-continue'),
+
+        // Contact form (step 2)
         contactForm:         $('contact-form'),
 
-        // Address form (step 2)
+        // Address form (step 3)
         addressForm:         $('address-form'),
         step2ContactDisplay: $('step2-contact-display'),
 
@@ -88,6 +113,7 @@
         addToGcal:           $('add-to-gcal'),
 
         // Nav buttons
+        backToMoveSize:      $('back-to-move-size'),
         backToContact:       $('back-to-contact'),
         backToAddress:       $('back-to-address'),
         backToDate:          $('back-to-date'),
@@ -322,12 +348,13 @@
 
     async function handleDateSelect(dateStr) {
         state.selectedDate = dateStr;
+        state.selectedSlot = null;
 
         els.calGrid.querySelectorAll('.cal-day--selected').forEach(el => el.classList.remove('cal-day--selected'));
         const target = els.calGrid.querySelector(`[data-date="${dateStr}"]`);
         if (target) target.classList.add('cal-day--selected');
 
-        goToStep(4);
+        goToStep(5);
         els.slotsGrid.innerHTML = '';
         els.slotsLoading.style.display = 'flex';
         els.step4DateDisplay.textContent = formatDateLong(dateStr);
@@ -418,7 +445,7 @@
             const t = c.querySelector('.slot-time').textContent;
             c.classList.toggle('slot-card--selected', t === slot.label);
         });
-        setTimeout(() => goToStep(5), 250);
+        setTimeout(() => goToStep(6), 250);
     }
 
     // ── Form Validation ───────────────────────────────────────
@@ -466,8 +493,6 @@
     const ADDRESS_FIELDS = [
         { id: 'fromAddress', msg: 'Please enter your pickup address.' },
         { id: 'toAddress',   msg: 'Please enter your delivery address.' },
-        { id: 'movers',      msg: 'Please select the number of movers.' },
-        { id: 'moveSize',    msg: 'Please select your move size.' },
     ];
 
     // ── Summary ───────────────────────────────────────────────
@@ -480,8 +505,8 @@
             email:       $('email').value.trim(),
             fromAddress: $('fromAddress').value.trim(),
             toAddress:   $('toAddress').value.trim(),
-            movers:      $('movers').value,
-            moveSize:    $('moveSize').value,
+            movers:      state.selectedMovers,
+            moveSize:    state.selectedMoveSize,
             notes:       $('notes').value.trim(),
         };
     }
@@ -613,7 +638,7 @@
         });
 
         els.stepsBar.style.display = 'none';
-        goToStep(7);
+        goToStep(8);
     }
 
     // ── Step Navigation ───────────────────────────────────────
@@ -623,13 +648,14 @@
 
         const panels = [
             null,
-            els.panelContact,  // 1
-            els.panelAddress,  // 2
-            els.panelDate,     // 3
-            els.panelTime,     // 4
-            els.panelTerms,    // 5
-            els.panelConfirm,  // 6
-            els.panelSuccess,  // 7
+            els.panelMoveSize, // 1
+            els.panelContact,  // 2
+            els.panelAddress,  // 3
+            els.panelDate,     // 4
+            els.panelTime,     // 5
+            els.panelTerms,    // 6
+            els.panelConfirm,  // 7
+            els.panelSuccess,  // 8
         ];
 
         panels.forEach((p, i) => {
@@ -637,8 +663,8 @@
             p.classList.toggle('active', i === n);
         });
 
-        // Update steps bar (steps 1-6; step 7 = success, bar is hidden)
-        if (n <= 6) {
+        // Update steps bar (steps 1-7; step 8 = success, bar is hidden)
+        if (n <= 7) {
             els.stepsBar.querySelectorAll('.step-item').forEach(item => {
                 const s = parseInt(item.dataset.step, 10);
                 item.classList.toggle('active', s === n);
@@ -700,7 +726,7 @@
             ac.addListener('place_changed', () => {
                 const place = ac.getPlace();
                 if (place.formatted_address) {
-                    input.value = place.formatted_address;
+                    input.value = place.formatted_address.replace(/, USA$/, '');
                     input.classList.remove('invalid');
                     const err = document.getElementById('err-' + id);
                     if (err) err.textContent = '';
@@ -712,29 +738,114 @@
 
     // ── Event Listeners ───────────────────────────────────────
 
+    // ── Move Size Step Logic ──────────────────────────────────
+
+    function updateMoverWarning() {
+        const recommended = MOVER_RECOMMENDATIONS[state.selectedMoveSize];
+        const selected    = state.selectedMovers;
+        if (!recommended || !selected || selected >= recommended) {
+            els.moverWarning.classList.remove('visible');
+            els.moverWarning.innerHTML = '';
+            return;
+        }
+        els.moverWarning.innerHTML = `
+            <svg class="mover-warning-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span><strong>Our recommendation for a ${state.selectedMoveSize} is ${recommended} movers.</strong> Going with ${selected} mover${selected === 1 ? '' : 's'} may result in your move taking longer to complete.</span>`;
+        els.moverWarning.classList.add('visible');
+    }
+
+    function selectMoveSize(size) {
+        state.selectedMoveSize = size;
+        state.selectedMovers   = null;
+
+        // Clear error
+        if (els.errMoveSizeSelect) els.errMoveSizeSelect.textContent = '';
+        if (els.moveSizeSelect) els.moveSizeSelect.classList.remove('invalid');
+
+        // Update mover buttons: highlight recommended, clear previous selection
+        const recommended = MOVER_RECOMMENDATIONS[size];
+        els.moversGrid.querySelectorAll('.mover-btn').forEach(btn => {
+            const count = parseInt(btn.dataset.movers, 10);
+            btn.classList.toggle('mover-btn--recommended', count === recommended);
+            btn.classList.remove('mover-btn--selected');
+            btn.setAttribute('aria-selected', 'false');
+        });
+
+        // Clear warning, error, and pricing
+        els.moverWarning.classList.remove('visible');
+        els.moverWarning.innerHTML = '';
+        if (els.errMoversStep1) els.errMoversStep1.textContent = '';
+
+        // Show movers section
+        els.moversSection.classList.add('visible');
+    }
+
+    function selectMovers(count) {
+        state.selectedMovers = count;
+
+        els.moversGrid.querySelectorAll('.mover-btn').forEach(btn => {
+            const isSelected = parseInt(btn.dataset.movers, 10) === count;
+            btn.classList.toggle('mover-btn--selected', isSelected);
+            btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        });
+
+        if (els.errMoversStep1) els.errMoversStep1.textContent = '';
+        updateMoverWarning();
+    }
+
     function bindEvents() {
         // Month nav
         els.prevMonth.addEventListener('click', prevMonth);
         els.nextMonth.addEventListener('click', nextMonth);
 
-        // ── Step 1: Contact form submit
+        // ── Step 1: Move size dropdown
+        els.moveSizeSelect.addEventListener('change', () => {
+            const size = els.moveSizeSelect.value;
+            if (size) selectMoveSize(size);
+        });
+
+        // ── Step 1: Mover buttons
+        els.moversGrid.querySelectorAll('.mover-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectMovers(parseInt(btn.dataset.movers, 10)));
+        });
+
+        // ── Step 1: Continue button
+        els.moveSizeContinue.addEventListener('click', () => {
+            if (!state.selectedMoveSize) {
+                els.moveSizeSelect.classList.add('invalid');
+                if (els.errMoveSizeSelect) els.errMoveSizeSelect.textContent = 'Please select your move size.';
+                els.moveSizeSelect.focus();
+                return;
+            }
+            if (!state.selectedMovers) {
+                if (els.errMoversStep1) els.errMoversStep1.textContent = 'Please select the number of movers.';
+                els.moversSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return;
+            }
+            goToStep(2);
+        });
+
+        // ── Step 2: Contact form submit
         els.contactForm.addEventListener('submit', e => {
             e.preventDefault();
             if (!validateFields(CONTACT_FIELDS)) return;
 
             const fd = collectFormData();
-            // Pre-fill context display for step 2
+            // Pre-fill context display for step 3
             els.step2ContactDisplay.textContent = `${fd.firstName} ${fd.lastName}`;
-            goToStep(2);
+            goToStep(3);
         });
 
-        // ── Step 2: Address form submit
+        // ── Step 3: Address form submit
         els.addressForm.addEventListener('submit', e => {
             e.preventDefault();
             if (!validateFields(ADDRESS_FIELDS)) return;
 
             // Go to calendar; fetch availability + distance check run in parallel
-            goToStep(3);
+            goToStep(4);
 
             // Load calendar for current month (fetches from Google Calendar)
             loadAndRenderCalendar(state.year, state.month);
@@ -748,27 +859,29 @@
         });
 
         // ── Back buttons
-        els.backToContact.addEventListener('click', () => goToStep(1));
+        els.backToMoveSize.addEventListener('click', () => goToStep(1));
 
-        els.backToAddress.addEventListener('click', () => goToStep(2));
+        els.backToContact.addEventListener('click', () => goToStep(2));
+
+        els.backToAddress.addEventListener('click', () => goToStep(3));
 
         els.backToDate.addEventListener('click', () => {
             // Clear selection so calendar resets
             els.calGrid.querySelectorAll('.cal-day--selected').forEach(el => el.classList.remove('cal-day--selected'));
             state.selectedDate = null;
-            goToStep(3);
+            goToStep(4);
         });
 
         els.backToTime.addEventListener('click', () => {
-            goToStep(4);
+            goToStep(5);
             els.step4DateDisplay.textContent = formatDateLong(state.selectedDate);
             els.slotsLoading.style.display   = 'none';
             renderSlots();
         });
 
-        els.backToTerms.addEventListener('click', () => goToStep(5));
+        els.backToTerms.addEventListener('click', () => goToStep(6));
 
-        // ── Step 5: Terms accept
+        // ── Step 6: Terms accept
         els.termsAcceptBtn.addEventListener('click', () => {
             if (!els.termsCheckbox.checked) {
                 els.errTerms.textContent = 'Please accept the terms and conditions to continue.';
@@ -784,7 +897,7 @@
             els.step5Summary.textContent =
                 `${formatDateShort(state.selectedDate)} · ${state.selectedSlot.label}`;
 
-            goToStep(6);
+            goToStep(7);
         });
 
         // Clear terms error when checkbox is clicked
@@ -792,7 +905,7 @@
             if (els.termsCheckbox.checked) els.errTerms.textContent = '';
         });
 
-        // ── Step 6: Final confirm / submit
+        // ── Step 7: Final confirm / submit
         els.confirmBtn.addEventListener('click', submitBooking);
 
         // ── Dismiss field errors on input (contact fields)

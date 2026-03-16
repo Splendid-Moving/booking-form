@@ -178,7 +178,7 @@ button { cursor: pointer; font-family: inherit; }
 /* ── Steps Bar ─────────────────────────────────────────────── */
 .steps-bar {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 0;
     margin-bottom: 1.75rem;
@@ -236,7 +236,7 @@ button { cursor: pointer; font-family: inherit; }
     height: 2px;
     background: var(--gray-200);
     margin: 0 0.25rem;
-    margin-bottom: 1rem; /* align with step-num center */
+    margin-top: 15px; /* vertically centers line with the 32px step-num circles */
 }
 
 /* ── Booking Panel ─────────────────────────────────────────── */
@@ -1007,6 +1007,261 @@ textarea { resize: vertical; }
 .pac-item { font-size: 0.875rem !important; padding: 0.4rem 0.75rem !important; }
 .pac-item:hover { background: var(--accent) !important; }
 
+/* ── Move Size Step ────────────────────────────────────────── */
+.move-size-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.625rem;
+    margin-bottom: 0.5rem;
+}
+
+.move-size-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem 0.875rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    text-align: center;
+    color: var(--gray-700);
+}
+.move-size-card:hover {
+    border-color: var(--secondary);
+    background: var(--accent);
+    color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.move-size-card--selected {
+    border-color: var(--secondary) !important;
+    background: var(--secondary-dim) !important;
+    color: var(--secondary) !important;
+    box-shadow: 0 0 0 3px rgba(24, 139, 246, 0.15);
+}
+
+.move-size-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+}
+.move-size-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: inherit;
+}
+
+/* ── Movers Selection ──────────────────────────────────────── */
+.movers-section {
+    display: none;
+    margin-top: 0.25rem;
+}
+.movers-section.visible { display: block; }
+
+.movers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.mover-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.mover-btn:hover {
+    border-color: var(--secondary);
+    background: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+.mover-btn--recommended {
+    border-color: rgba(24, 139, 246, 0.4);
+    background: var(--accent);
+}
+.mover-btn--selected {
+    border-color: var(--secondary) !important;
+    background: var(--secondary) !important;
+    box-shadow: var(--shadow-glow) !important;
+}
+
+/* Left side: name, desc, badge */
+.mover-btn__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+.mover-btn__team {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.2;
+}
+.mover-btn__desc {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    line-height: 1.3;
+}
+.mover-badge {
+    display: none;
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    background: var(--secondary-dim);
+    border-radius: var(--radius-full);
+    padding: 0.15rem 0.5rem;
+    margin-top: 0.15rem;
+}
+.mover-btn--recommended .mover-badge { display: inline-block; }
+
+/* Right side: rate columns */
+.mover-btn__pricing {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+.mover-btn__rate-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-width: 3.25rem;
+    text-align: center;
+}
+.mover-btn__rate-amount {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
+}
+.mover-btn__rate-unit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.7;
+}
+.mover-btn__rate-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.mover-btn__rate-sep {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    font-weight: 500;
+}
+
+/* Selected state — white text on blue */
+.mover-btn--selected .mover-btn__team,
+.mover-btn--selected .mover-btn__rate-amount { color: var(--white) !important; }
+.mover-btn--selected .mover-btn__desc,
+.mover-btn--selected .mover-btn__rate-label,
+.mover-btn--selected .mover-btn__rate-sep { color: rgba(255,255,255,0.75) !important; }
+.mover-btn--selected .mover-badge {
+    background: rgba(255,255,255,0.25);
+    color: var(--white);
+}
+
+/* ── What's Included Box ───────────────────────────────────── */
+.rate-includes {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 0.875rem 1.125rem;
+    margin-bottom: 0.875rem;
+}
+.rate-includes__title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray-500);
+    margin-bottom: 0.5rem;
+}
+.rate-includes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem 1rem;
+}
+.rate-includes__list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+.rate-includes__list li::before {
+    content: '✓';
+    color: #16a34a;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* ── 3-Hour Minimum Notice ─────────────────────────────────── */
+.min-charge-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.9rem 1.125rem;
+    background: rgba(24, 139, 246, 0.06);
+    border: 1.5px solid rgba(24, 139, 246, 0.3);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--primary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+.min-charge-box strong { color: var(--primary); }
+.min-charge-box a { color: var(--secondary); font-weight: 600; }
+
+/* ── Mover Under-Recommendation Warning ────────────────────── */
+.mover-warning {
+    display: none;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.9rem 1rem;
+    background: rgba(217, 119, 6, 0.07);
+    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: #92400e;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+}
+.mover-warning.visible { display: flex; }
+.mover-warning-icon { flex-shrink: 0; margin-top: 1px; color: #d97706; }
+.mover-warning strong { color: #78350f; }
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .booking-panel { padding: 1.5rem 1.25rem 1.75rem; }
@@ -1039,6 +1294,10 @@ textarea { resize: vertical; }
     .terms-box { max-height: 200px; font-size: 0.82rem; }
     .panel-actions--end { justify-content: stretch; }
     .panel-actions--end .btn { width: 100%; justify-content: center; }
+
+    .mover-btn { padding: 0.875rem 1rem; gap: 0.75rem; }
+    .mover-btn__rate-amount { font-size: 1.25rem; }
+    .rate-includes__list { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 400px) {

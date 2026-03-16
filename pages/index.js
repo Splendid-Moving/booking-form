@@ -64,41 +64,168 @@ export default function BookingPage() {
             <main className="booking-main">
                 <div className="booking-container container">
 
-                    {/* Progress Bar — 6 steps */}
+                    {/* Progress Bar — 7 steps */}
                     <div className="steps-bar" id="steps-bar" aria-label="Booking steps">
                         <div className="step-item active" data-step="1">
                             <span className="step-num">1</span>
-                            <span className="step-label">Contact</span>
+                            <span className="step-label">Move Size</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="2">
                             <span className="step-num">2</span>
-                            <span className="step-label">Move Info</span>
+                            <span className="step-label">Contact</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="3">
                             <span className="step-num">3</span>
-                            <span className="step-label">Date</span>
+                            <span className="step-label">Details</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="4">
                             <span className="step-num">4</span>
-                            <span className="step-label">Time</span>
+                            <span className="step-label">Date</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="5">
                             <span className="step-num">5</span>
-                            <span className="step-label">Terms</span>
+                            <span className="step-label">Time</span>
                         </div>
                         <div className="step-divider" aria-hidden="true"></div>
                         <div className="step-item" data-step="6">
                             <span className="step-num">6</span>
+                            <span className="step-label">Terms</span>
+                        </div>
+                        <div className="step-divider" aria-hidden="true"></div>
+                        <div className="step-item" data-step="7">
+                            <span className="step-num">7</span>
                             <span className="step-label">Confirm</span>
                         </div>
                     </div>
 
-                    {/* ── Step 1: Contact Info ───────────────── */}
-                    <div className="booking-panel active" id="panel-contact" role="region" aria-label="Your contact information">
+                    {/* ── Step 1: Move Size & Team ───────────── */}
+                    <div className="booking-panel active" id="panel-move-size" role="region" aria-label="Select your move size and team">
+                        <div className="panel-header">
+                            <h2>How Big Is Your Move?</h2>
+                            <p>Select your move size and we&apos;ll recommend the right team for you.</p>
+                        </div>
+
+                        <div className="form-section">
+                            <h3 className="form-section-title">Move Size</h3>
+                            <div className="form-group">
+                                <label htmlFor="move-size-select">What size is your move? <span className="req" aria-hidden="true">*</span></label>
+                                <select id="move-size-select" name="moveSize" required>
+                                    <option value="">Select your move size…</option>
+                                    <option value="Few Items">Few Items</option>
+                                    <option value="Studio">Studio</option>
+                                    <option value="1 Bedroom">1 Bedroom</option>
+                                    <option value="2 Bedrooms">2 Bedrooms</option>
+                                    <option value="3 Bedrooms">3 Bedrooms</option>
+                                    <option value="4+ Bedrooms">4+ Bedrooms</option>
+                                    <option value="Small Office">Small Office</option>
+                                    <option value="Medium Office">Medium Office</option>
+                                    <option value="Large Office">Large Office</option>
+                                </select>
+                                <span className="field-error" id="err-move-size-select"></span>
+                            </div>
+                        </div>
+
+                        <div className="movers-section" id="movers-section">
+                            <h3 className="form-section-title">Select Your Team</h3>
+                            <div className="movers-list" id="movers-grid" role="listbox" aria-label="Select number of movers">
+
+                                <button type="button" className="mover-btn" data-movers="2" role="option" aria-selected="false">
+                                    <div className="mover-btn__info">
+                                        <span className="mover-btn__team">2 Movers + 26ft Truck</span>
+                                        <span className="mover-btn__desc">Perfect for studios &amp; 1-bedrooms</span>
+                                        <span className="mover-badge">Recommended</span>
+                                    </div>
+                                    <div className="mover-btn__pricing">
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$110<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Cash</span>
+                                        </div>
+                                        <span className="mover-btn__rate-sep">or</span>
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$120<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Card</span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <button type="button" className="mover-btn" data-movers="3" role="option" aria-selected="false">
+                                    <div className="mover-btn__info">
+                                        <span className="mover-btn__team">3 Movers + 26ft Truck</span>
+                                        <span className="mover-btn__desc">Ideal for 2-bedrooms &amp; small offices</span>
+                                        <span className="mover-badge">Recommended</span>
+                                    </div>
+                                    <div className="mover-btn__pricing">
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$135<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Cash</span>
+                                        </div>
+                                        <span className="mover-btn__rate-sep">or</span>
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$145<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Card</span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <button type="button" className="mover-btn" data-movers="4" role="option" aria-selected="false">
+                                    <div className="mover-btn__info">
+                                        <span className="mover-btn__team">4 Movers + 26ft Truck</span>
+                                        <span className="mover-btn__desc">Best for 3+ bedrooms &amp; larger offices</span>
+                                        <span className="mover-badge">Recommended</span>
+                                    </div>
+                                    <div className="mover-btn__pricing">
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$170<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Cash</span>
+                                        </div>
+                                        <span className="mover-btn__rate-sep">or</span>
+                                        <div className="mover-btn__rate-col">
+                                            <span className="mover-btn__rate-amount">$180<span className="mover-btn__rate-unit">/hr</span></span>
+                                            <span className="mover-btn__rate-label">Card</span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                            </div>
+
+                            <div className="rate-includes">
+                                <div className="rate-includes__title">Every move includes:</div>
+                                <ul className="rate-includes__list">
+                                    <li>26ft moving truck</li>
+                                    <li>Free shrink wrap &amp; tape</li>
+                                    <li>Furniture protection blankets</li>
+                                    <li>Packing &amp; unpacking</li>
+                                    <li>Furniture disassembly &amp; reassembly</li>
+                                </ul>
+                            </div>
+
+                            <div className="min-charge-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="min-charge-icon" style={{flexShrink:0, marginTop:'2px'}}>
+                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <p><strong>3-hour minimum applies to all moves.</strong> You&apos;re billed per hour and the clock starts when our team arrives. Need more than 4 movers or a second truck? Call us at <a href="tel:3236452636">(323) 645-2636</a>.</p>
+                            </div>
+
+                            <div className="mover-warning" id="mover-warning" role="alert" aria-live="polite"></div>
+                            <span className="field-error" id="err-movers-step1"></span>
+                        </div>
+
+                        <div className="panel-actions panel-actions--end">
+                            <button type="button" className="btn btn--primary" id="move-size-continue">
+                                Continue
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* ── Step 2: Contact Info ───────────────── */}
+                    <div className="booking-panel" id="panel-contact" role="region" aria-label="Your contact information">
                         <div className="panel-header">
                             <h2>Let&apos;s Book Your Move</h2>
                             <p>You&apos;ve received your quote — now let&apos;s lock in your date.</p>
@@ -128,7 +255,13 @@ export default function BookingPage() {
                                     <span className="field-error" id="err-email"></span>
                                 </div>
                             </div>
-                            <div className="panel-actions panel-actions--end">
+                            <div className="panel-actions">
+                                <button type="button" className="btn btn--back" id="back-to-move-size">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <polyline points="15 18 9 12 15 6" />
+                                    </svg>
+                                    Back
+                                </button>
                                 <button type="submit" className="btn btn--primary">
                                     Continue
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -139,7 +272,7 @@ export default function BookingPage() {
                         </form>
                     </div>
 
-                    {/* ── Step 2: Move Info + Addresses ─────── */}
+                    {/* ── Step 3: Move Details + Addresses ──── */}
                     <div className="booking-panel" id="panel-address" role="region" aria-label="Your move addresses and details">
                         <div className="panel-header">
                             <h2>Move Details</h2>
@@ -160,35 +293,9 @@ export default function BookingPage() {
                                 </div>
                             </div>
                             <div className="form-section">
-                                <h3 className="form-section-title">Move Information</h3>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="movers">Number of Movers <span className="req" aria-hidden="true">*</span></label>
-                                        <select id="movers" name="movers" required>
-                                            <option value="">Select…</option>
-                                            <option value="2">2 Movers</option>
-                                            <option value="3">3 Movers</option>
-                                            <option value="4">4 Movers</option>
-                                        </select>
-                                        <span className="field-error" id="err-movers"></span>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="moveSize">Move Size <span className="req" aria-hidden="true">*</span></label>
-                                        <select id="moveSize" name="moveSize" required>
-                                            <option value="">Select…</option>
-                                            <option value="Studio">Studio</option>
-                                            <option value="1 Bedroom">1 Bedroom</option>
-                                            <option value="2 Bedrooms">2 Bedrooms</option>
-                                            <option value="3 Bedrooms">3 Bedrooms</option>
-                                            <option value="4+ Bedrooms">4+ Bedrooms</option>
-                                            <option value="Office / Commercial">Office / Commercial</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        <span className="field-error" id="err-moveSize"></span>
-                                    </div>
-                                </div>
+                                <h3 className="form-section-title">Additional Notes</h3>
                                 <div className="form-group">
-                                    <label htmlFor="notes">Additional Notes <span className="optional">(optional)</span></label>
+                                    <label htmlFor="notes">Notes <span className="optional">(optional)</span></label>
                                     <textarea id="notes" name="notes" rows="3" placeholder="Special items, parking info, floor level, elevator access, etc."></textarea>
                                 </div>
                             </div>
@@ -295,29 +402,19 @@ export default function BookingPage() {
                         </div>
                         <div className="terms-box" tabIndex="0" aria-label="Terms and conditions text">
                             <h3>1. Booking Confirmation</h3>
-                            <p>Submitting this form constitutes a booking request. Your move is confirmed once you receive a confirmation call or email from Splendid Moving. We will contact you within 24 hours to verify all details.</p>
+                            <p>Submitting this form constitutes a booking request. Your move is confirmed only after you receive a confirmation text or email from Splendid Moving. We will contact you within one hour to verify all details.</p>
 
                             <h3>2. Deposit &amp; Payment</h3>
-                            <p>A deposit may be required to hold your moving date. Full payment is due upon completion of the move. We accept cash, major credit cards, and Zelle. Prices are based on the quote you received and may be adjusted if the scope of the move changes.</p>
+                            <p>A $50 deposit is required to secure your moving date. Full payment is due upon completion of the move. We accept physical cash and card payments only. Final pricing is based on your original quote and may be adjusted if the scope of the move changes.</p>
 
                             <h3>3. Cancellation &amp; Rescheduling</h3>
-                            <p>Cancellations or rescheduling requests made at least 48 hours before the scheduled move are free of charge. Cancellations within 48 hours of the move may be subject to a cancellation fee. Please contact our office as soon as possible if you need to make changes.</p>
+                            <p>A minimum 72-hour notice is required to cancel or reschedule your move. Cancellations made within this window will forfeit the deposit.</p>
 
-                            <h3>4. Arrival Window</h3>
-                            <p>Your selected arrival window is an estimated range. Actual arrival may vary by up to 30 minutes due to traffic or the completion of a prior job. We will notify you if there are any significant delays.</p>
+                            <h3>4. Minimum &amp; Transportation Charges</h3>
+                            <p>All moves are subject to a 3-hour minimum. If the distance between your pick-up and delivery address exceeds 15 miles, drive time is charged as Double Drive Time (DDT) and added on top of the minimum. A gas fee may apply if your pick-up location is more than 30 miles from our depot.</p>
 
-                            <h3>5. Liability &amp; Valuation</h3>
-                            <p>Splendid Moving carries full general liability insurance. Standard coverage is included at no additional charge. We recommend documenting high-value or fragile items prior to moving day. We are not liable for items not disclosed at the time of booking.</p>
-
-                            <h3>6. Additional Services</h3>
-                            <p>Any services requested on moving day that were not included in your original quote (packing, specialty item handling, long carries, extra stops, etc.) will be discussed and agreed upon before work begins and charged at our standard rates.</p>
-
-                            <h3>7. Access &amp; Parking</h3>
-                            <p>You are responsible for ensuring adequate parking and elevator/stairwell access at both locations. Any parking fees or fines incurred by our crew will be added to your final invoice.</p>
-
-                            <p style={{marginTop: '1rem', fontSize: '0.8rem', color: 'var(--gray-400)'}}>
-                                These terms are subject to change. The final terms applicable to your move will be provided in your booking confirmation.
-                            </p>
+                            <h3>5. Access &amp; Parking</h3>
+                            <p>You are responsible for ensuring adequate parking and elevator or stairwell access at both locations. Any parking fees or fines incurred by our crew will be added to your final invoice.</p>
                         </div>
                         <div className="terms-accept">
                             <label className="checkbox-label" htmlFor="terms-checkbox">
@@ -369,7 +466,7 @@ export default function BookingPage() {
                         <div className="success-screen">
                             <div className="success-icon" aria-hidden="true">✓</div>
                             <h2>Booking Submitted!</h2>
-                            <p className="success-msg">Your request is in — we&apos;ll call or email you within 24 hours to confirm the details of your move.</p>
+                            <p className="success-msg">Your request is in! One of our team members will reach out shortly to confirm your move.</p>
                             <div className="success-card" id="success-card"></div>
                             <div className="success-actions">
                                 <a href="#" id="add-to-gcal" className="btn btn--outline" target="_blank" rel="noopener">
@@ -397,12 +494,13 @@ export default function BookingPage() {
                 </div>
             </footer>
 
-            {/* Google Maps — Places autocomplete + Distance Matrix */}
-            <Script
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8m3zbP2Eknf1agTJPLpHc4U6ACh8HpME&libraries=places&loading=async&callback=initAddressAutocomplete"
-                strategy="afterInteractive"
-            />
             <Script src="/script.js" strategy="afterInteractive" />
+            {/* No callback= in URL — onLoad fires after Maps is ready, by which point script.js has already executed */}
+            <Script
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8m3zbP2Eknf1agTJPLpHc4U6ACh8HpME&libraries=places"
+                strategy="afterInteractive"
+                onLoad={() => { if (window.initAddressAutocomplete) window.initAddressAutocomplete(); }}
+            />
         </>
     );
 }
