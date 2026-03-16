@@ -85,7 +85,7 @@ export default async function handler(req, res) {
             }
 
             // locationId is required on POST but must be omitted on PUT
-            const { locationId: _loc, ...updateData } = contactData;
+            const { locationId: _loc, ...updatePayload } = contactData;
 
             const updateRes  = await fetch(`${GHL_API}/contacts/${existingId}`, {
                 method: 'PUT',
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
                     'Content-Type':  'application/json',
                     'Version':        GHL_VERSION,
                 },
-                body: JSON.stringify(updateData),
+                body: JSON.stringify(updatePayload),
             });
 
             const updateData = await updateRes.json();
