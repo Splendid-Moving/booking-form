@@ -98,7 +98,7 @@ export default async function handler(req, res) {
 
             if (!updateRes.ok) {
                 console.error('[book] Failed to update existing contact:', updateData);
-                return res.status(updateRes.status).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });
+                return res.status(updateRes.status).json({ error: 'Failed to confirm booking. Please try again or call (323) 645-2636.' });
             }
 
             return res.status(200).json({ success: true, eventId: existingId });
@@ -106,7 +106,7 @@ export default async function handler(req, res) {
 
         if (!ghlRes.ok) {
             console.error('[book] GHL API error:', ghlData);
-            return res.status(ghlRes.status).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });
+            return res.status(ghlRes.status).json({ error: 'Failed to confirm booking. Please try again or call (323) 645-2636.' });
         }
 
         const contactId = ghlData.contact?.id || ghlData.id;
@@ -114,6 +114,6 @@ export default async function handler(req, res) {
 
     } catch (err) {
         console.error('[book]', err.message);
-        return res.status(500).json({ error: 'Failed to confirm booking. Please try again or call (213) 724-0394.' });
+        return res.status(500).json({ error: 'Failed to confirm booking. Please try again or call (323) 645-2636.' });
     }
 }

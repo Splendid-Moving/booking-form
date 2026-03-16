@@ -162,7 +162,7 @@
         const end   = fmt(endH, endM);
         const title = encodeURIComponent('Move with Splendid Moving');
         const loc   = encodeURIComponent(fromAddress || '');
-        const desc  = encodeURIComponent('Your Splendid Moving crew will arrive during this window.\nPhone: (213) 724-0394');
+        const desc  = encodeURIComponent('Your Splendid Moving crew will arrive during this window.\nPhone: (323) 645-2636');
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${desc}&location=${loc}`;
     }
 

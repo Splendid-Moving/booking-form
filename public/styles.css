@@ -94,7 +94,7 @@ button { cursor: pointer; font-family: inherit; }
     height: 60px;
 }
 
-.header-logo img { height: 34px; width: auto; }
+.header-logo img { height: 46px; width: auto; }
 
 .header-phone {
     display: flex;
