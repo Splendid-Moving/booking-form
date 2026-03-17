@@ -693,6 +693,9 @@
     // Registered as a global callback for the Maps script tag.
 
     window.initAddressAutocomplete = function () {
+        // Guard: if Maps Places library isn't ready yet, bail — the onLoad handler will retry
+        if (!window.google?.maps?.places) return;
+
         const fields = [
             {
                 id:      'fromAddress',
@@ -735,6 +738,9 @@
             });
         });
     };
+
+    // If Maps already finished loading before this script ran, init immediately
+    if (window.google?.maps?.places) window.initAddressAutocomplete();
 
     // ── Event Listeners ───────────────────────────────────────
 
