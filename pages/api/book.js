@@ -4,6 +4,12 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
+const RATE_BY_MOVERS = {
+    2: '$110 cash /$120 card',
+    3: '$135 cash /$145 card',
+    4: '$170 cash /$180 card',
+};
+
 // "8:00 AM – 9:00 AM" → "8-9am" | "2:00 PM – 4:00 PM" → "2-4pm"
 function formatArrivalTime(slotLabel) {
     const m = slotLabel?.match(/(\d+):\d+\s*(AM|PM)\s*[–-]\s*(\d+):\d+\s*(AM|PM)/i);
@@ -54,6 +60,7 @@ export default async function handler(req, res) {
             { id: 'VuatzebiX5qPrzGjl4d4', value: date },
             { id: 'BZMRDjwmqFl957qHlTO6', value: formatArrivalTime(slotLabel) },
             { id: 'bB6TkyeEhBbrX1ao9eEr', value: String(movers) },
+            { id: 'VxtRrePqXpDGyAzs0TsI', value: RATE_BY_MOVERS[Number(movers)] || '' },
             { id: 'HZgxySrqsR4IICCBWZr5', value: notes ? notes.trim() : '' },
         ],
     };
