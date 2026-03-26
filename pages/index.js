@@ -491,6 +491,9 @@ export default function BookingPage() {
                         <a href="tel:3236452636">(323) 645-2636</a> &nbsp;·&nbsp;
                         <a href="https://splendidmoving.com">splendidmoving.com</a>
                     </p>
+                    <p style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.5rem", opacity: 0.7 }}>
+                        Developed by <a href="https://simple-flow.co" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none", borderBottom: "1px dotted currentColor" }}>Simple-Flow</a>
+                    </p>
                 </div>
             </footer>
 
